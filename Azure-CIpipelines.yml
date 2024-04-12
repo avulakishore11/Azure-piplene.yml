@@ -1,0 +1,95 @@
+# So, every application does have front end and backend. frontend either should be ANGULAR/REACTSJS\
+# so, it should need the NPM-install,build, test
+# for, backend either it is java,.NET
+  
+
+
+
+
+
+## .NET practice for CI (continious integration)##
+trigger:
+  branches:
+    include:
+      - feature/*   # Trigger CI for feature branches
+      - developer/* # Trigger CI for developer branches
+      - main/*      # Trigger CI for main branches
+
+pool:
+  name: buildagent1
+
+variables:
+  buildConfiguration: 'Release' 
+  dotnetVersion: '6.0'           
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    displayName: 'Build'
+    steps:
+    - task1: UseDotNet@2
+      displayName: 'Use .NET Core SDK'
+      inputs:
+        version: '$(dotnetVersion)' # Use the specified .NET Core SDK version
+
+    - task2: DotNetCoreCLI@2
+      displayName: 'Dotnet Build'
+      inputs:
+        command: 'build'
+        arguments: '--configuration $(buildConfiguration)'
+
+    - task3: DotNetCoreCLI@2
+      displayName: 'Dotnet Publish'
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+    - task4: DotNetCoreCLI@2
+      displayName: 'Dotnet Test'
+      inputs:
+        command: 'test'
+        arguments: '--configuration $(buildConfiguration)'
+     
+      ## $(Build.ArtifactstagingDirectory) this is where we store our ARTIFACT in /a (_work) in my agent ##
+    
+    
+    
+    # CLIENT APPLICATION/UI/FRONT-END FOR installing NPM, test, BUILD#
+    
+    - task5: Npm@1
+      displayName: install npm
+      inputs:
+      - command: install
+        workingdir: ClientApp # Path to your project directory containing package.json
+
+
+    - task6: Npm@1
+      displayName: npm build
+      inputs: 
+      - command: build
+        workingDir: clientAPP # Path to your project directory containing package.json
+
+
+
+    - task7: Npm@1
+      displayName: npm test
+      inputs:
+      - command: custom
+        workingDir: clirntAPP # Path to your project directory containing package.json
+        custaomcommand: run test    
+
+
+
+# workingDir specifies the path to the directory where your PACKAGE.JSON file is located/
+  
+  #Replace 'path/to/your/project' with the actual path to your project directory #
+
+
+
+
+
+          
+
+
